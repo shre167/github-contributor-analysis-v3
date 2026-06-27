@@ -1,0 +1,22 @@
+github_login,github_id,name,company,bio,location,email,blog,twitter_username,public_repos,followers,following,created_at,html_url,internal_or_external,classification_confidence,contributions,linkedin_url,employer_inferred,tenure_current_employer_years,employer_confidence
+jif-oai,230027070,jif,,,,,,,3,132,0,2025-09-02T19:30:44Z,https://github.com/jif-oai,Internal,Medium,1160,https://www.linkedin.com/in/roy-chen-5a2052a0,Unknown,Unknown,Low
+bolinfest,655869,Michael Bolin,Meta,Michael Bolin,,,,,109,797,9,2011-03-07T16:13:34Z,https://github.com/bolinfest,External,Low,1001,https://www.linkedin.com/in/michael-bolin-7632712,Unknown,Unknown,Low
+aibrahim-oai,219906144,Ahmed Ibrahim,OpenAI,,,,,,1,191,1,2025-07-08T19:35:28Z,https://github.com/aibrahim-oai,Internal,High,582,https://www.linkedin.com/in/ahmedibrhm,Unknown,Unknown,Low
+pakrym-oai,204937752,,,@pakrym @ @openai ,,,,,2,126,1,2025-03-25T21:11:23Z,https://github.com/pakrym-oai,Internal,Medium,532,Unknown,Unknown,Unknown,Low
+etraut-openai,223546144,Eric Traut,,,,,,,1,262,0,2025-07-29T19:21:38Z,https://github.com/etraut-openai,Internal,Medium,472,https://www.linkedin.com/in/eric-traut-79a815137,Unknown,Unknown,Low
+dylan-hurd-oai,220976066,Dylan Hurd,OpenAI,Member of Technical Staff @openai ,"San Francisco, CA",,,,1,53,0,2025-07-15T21:13:10Z,https://github.com/dylan-hurd-oai,Internal,High,219,https://www.linkedin.com/in/dylanhurd,Unknown,Unknown,Low
+nornagon-openai,172423086,Jeremy Rose,,,,,,,2,67,0,2024-06-11T16:53:18Z,https://github.com/nornagon-openai,Internal,Medium,204,https://au.linkedin.com/in/jeremy-rose-099a9936,Unknown,Unknown,Low
+owenlin0,947871,Owen Lin,,,,,,,7,30,2,2011-07-30T01:18:48Z,https://github.com/owenlin0,External,Low,166,https://www.linkedin.com/in/owenlin,Unknown,Unknown,Low
+viyatb-oai,234056686,,,,,,,,1,13,0,2025-09-23T19:34:33Z,https://github.com/viyatb-oai,Internal,Medium,143,Unknown,Unknown,Unknown,Low
+iceweasel-oai,234057055,,,,,,,,3,10,0,2025-09-23T19:37:14Z,https://github.com/iceweasel-oai,Internal,Medium,133,Unknown,Unknown,Unknown,Low
+xl-openai,184293535,,,,,,,,1,25,0,2024-10-08T18:49:54Z,https://github.com/xl-openai,Internal,Medium,131,https://in.linkedin.com/in/adamya-kumar-5947751ba,Unknown,Unknown,Low
+dependabot[bot],49699333,,,,,,,,0,0,0,2019-04-16T22:34:25Z,https://github.com/apps/dependabot,External,Low,126,https://www.linkedin.com/in/breyanna-vass,Unknown,Unknown,Low
+sayan-oai,244841968,,,,,,,,1,6,0,2025-11-18T23:40:00Z,https://github.com/sayan-oai,Internal,Medium,121,Unknown,Unknown,Unknown,Low
+anp-oai,286154589,Adam Perry @ OpenAI,,,,,,,1,0,0,2026-05-19T22:15:27Z,https://github.com/anp-oai,Internal,Medium,116,Unknown,Unknown,Unknown,Low
+celia-oai,209693228,Celia Chen,,,,,,,0,30,0,2025-04-29T19:22:06Z,https://github.com/celia-oai,Internal,Medium,106,https://www.linkedin.com/in/celiachen,Unknown,Unknown,Low
+mzeng-openai,175741029,Matthew Zeng,,,,,,,1,17,0,2024-07-16T18:32:55Z,https://github.com/mzeng-openai,Internal,Medium,106,https://www.linkedin.com/in/matthew-zeng-9b309623a,Unknown,Unknown,Low
+charley-oai,253381928,Charley Cunningham,,,,,,,0,13,1,2026-01-06T22:35:16Z,https://github.com/charley-oai,Internal,Medium,103,https://www.linkedin.com/in/charley-cunningham-049a81193,Unknown,Unknown,Low
+gpeal,1307745,Gabriel Peal,OpenAI,"Maintainer of Lottie Android and MvRx.
+Software engineer at OpenAI. Formerly Watershed Climate, Tonal, Airbnb and Google.","San Francisco, CA",,https://twitter.com/gpeal8,,60,1151,1,2012-01-05T20:54:58Z,https://github.com/gpeal,Internal,High,89,https://www.linkedin.com/in/gpeal,Unknown,Unknown,Low
+tibo-openai,177053821,Thibault Sottiaux,,,,,,,7,398,1,2024-07-30T18:40:07Z,https://github.com/tibo-openai,Internal,Medium,89,https://www.linkedin.com/in/thibault-sottiaux-27195366,Unknown,Unknown,Low
+fcoury-oai,272635208,Felipe Coury,,,,,,,2,8,0,2026-03-31T20:45:18Z,https://github.com/fcoury-oai,Internal,Medium,89,https://br.linkedin.com/in/fcoury,Unknown,Unknown,Low
