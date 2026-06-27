@@ -1,79 +1,124 @@
 # GitHub Contributor Analysis + LinkedIn Enrichment Pipeline
 
-A data engineering pipeline that extracts GitHub repository contributors, resolves their LinkedIn profiles, and enriches them with professional data — inferred employer, career history, and estimated tenure.
+> **Huntd Take-Home Task 1** — A data engineering pipeline that analyzes GitHub repositories to classify internal vs. external contributions, then enriches top contributor profiles with LinkedIn data to infer employer, career history, and estimated tenure.
+
+---
+
+## Task Context
+
+This project was built as part of the **Huntd Interview Take-Home Round (Task 1)**. The objective was to:
+
+1. Analyze two AI CLI repositories — [OpenAI Codex CLI](https://github.com/openai/codex) and [Google Gemini CLI](https://github.com/google-gemini/gemini-cli) — and estimate the split between **internal (employee) vs. external (community) contributions**.
+2. Enrich the **top contributors** with professional data sourced from LinkedIn — current employer, inferred tenure, and confidence scores.
+
+The pipeline is built to be **repo-agnostic**: point it at any GitHub repository, and it will produce the same structured output.
 
 ---
 
 ## Problem Statement
 
-Open-source contribution data on GitHub contains no professional context. This pipeline bridges that gap by enriching contributor profiles with LinkedIn data, enabling structured analysis of who contributes to repositories and what their professional background looks like.
+GitHub contribution data is purely technical — it tells you who committed code, but nothing about who those people are professionally. This pipeline bridges that gap by resolving GitHub contributors to their LinkedIn profiles and enriching each record with employer and tenure data, enabling analysis of the professional composition of any open-source project.
+
+---
+
+## Repositories Analyzed
+
+| Repository | Company | URL |
+|---|---|---|
+| Codex CLI | OpenAI | [github.com/openai/codex](https://github.com/openai/codex) |
+| Gemini CLI | Google | [github.com/google-gemini/gemini-cli](https://github.com/google-gemini/gemini-cli) |
 
 ---
 
 ## System Pipeline / Workflow
 
 ```
-GitHub Repo
-    │
-    ▼
+GitHub Repository URL
+        │
+        ▼
 1. Extract Contributors         [github_analysis.py]
-   └── Pull contributor list via GitHub API
+   └── Pull contributor list + commit counts via GitHub API
+   └── Classify as internal / external based on org membership & email domain
 
-    │
-    ▼
+        │
+        ▼
 2. Search LinkedIn Profiles     [linkedin_search.py]
-   └── Match GitHub usernames/names to LinkedIn URLs
+   └── Use Apify Google Search actor to find LinkedIn URLs
+   └── Match GitHub names/usernames to LinkedIn profiles
 
-    │
-    ▼
+        │
+        ▼
 3. Scrape LinkedIn Profiles     [linkedin_enrichment.py]
-   └── Fetch structured profile data via Bright Data API
+   └── Fetch structured profile data via Bright Data LinkedIn Scraper API
+   └── Extract current role, employer, and employment history
 
-    │
-    ▼
+        │
+        ▼
 4. Classify & Infer             [classify.py]
-   └── Infer employer, tenure, and career signals
+   └── Bucket employers: OpenAI / Google / Anthropic / xAI / Other
+   └── Calculate tenure from start date to present
+   └── Assign confidence scores (high / medium / low)
 
-    │
-    ▼
+        │
+        ▼
 5. Consolidate Output           [contribution_analysis.py]
-   └── Merge all enriched fields into final dataset
+   └── Merge all fields into final enriched dataset
+   └── Generate contribution_summary and report.md
 ```
 
 ---
 
-## Data Fields Explanation
+## Output Dataset Schema
+
+The final dataset (`output/final_dataset.csv`) contains the following fields as specified by the task:
 
 | Field | Description |
 |---|---|
-| `linkedin_url` | Resolved LinkedIn profile URL for the GitHub contributor |
-| `employer_inferred` | Current employer extracted from the LinkedIn "Experience" section (most recent role) |
-| `tenure` | Estimated duration at the current employer, calculated from start date to present |
-| `confidence` | Reliability score for the LinkedIn-to-GitHub match and data completeness (low / medium / high) |
+| `repo` | Repository name (e.g. `openai/codex`) |
+| `github_login` | GitHub username of the contributor |
+| `github_id` | Numeric GitHub user ID |
+| `name` | Full name (from GitHub or LinkedIn) |
+| `contribution_metric` | Commit count used as the contribution signal |
+| `internal_or_external` | `Internal` if affiliated with the repo's parent company; `External` otherwise |
+| `employer_inferred` | Current employer extracted from LinkedIn Experience section |
+| `employer_confidence` | Match confidence: `high` / `medium` / `low` |
+| `linkedin_url` | Resolved LinkedIn profile URL |
+| `tenure_current_employer_years` | Estimated years at current employer (calculated from start date) |
+| `tenure_confidence` | Confidence in tenure estimate: `high` / `medium` / `low` |
+
+Incomplete or unresolvable records are marked `Unknown` with `low` confidence — not omitted.
 
 ---
 
 ## Tools & Technologies Used
 
-| Category | Tool / Library |
+| Category | Tool / Service |
 |---|---|
 | Language | Python 3 |
-| GitHub Data | GitHub REST API (`PyGitHub`) |
+| GitHub Data | GitHub REST API via `PyGitHub` |
+| LinkedIn Discovery | Apify — Google Search Actor |
 | LinkedIn Scraping | Bright Data LinkedIn Scraper API |
 | Data Processing | `pandas` |
-| Output Format | CSV |
-| Environment | `.env` for API key management |
+| Environment Config | `.env` via `python-dotenv` |
+| Output Format | CSV + Markdown report |
 
 ---
 
-## Key Insights / Results
+## Required API Keys
 
-- Successfully extracted GitHub contributors and resolved a subset to LinkedIn profiles
-- Inferred current employer and estimated tenure for matched profiles
-- Produced a structured, analysis-ready CSV dataset joining contribution activity with professional background
-- Identified patterns in contributor seniority and organizational affiliation where LinkedIn data was available
+Add the following to a `.env` file in the project root:
 
-> Note: Match rates and coverage depend on GitHub profile completeness and LinkedIn search accuracy.
+```env
+GITHUB_TOKEN=your_github_personal_access_token
+BRIGHTDATA_API_KEY=your_brightdata_api_key
+APIFY_API_TOKEN=your_apify_api_token
+```
+
+| Key | Where to get it |
+|---|---|
+| `GITHUB_TOKEN` | [github.com/settings/tokens](https://github.com/settings/tokens) |
+| `BRIGHTDATA_API_KEY` | [brightdata.com](https://brightdata.com) — LinkedIn Scraper product |
+| `APIFY_API_TOKEN` | [apify.com](https://apify.com) — free tier available |
 
 ---
 
@@ -83,49 +128,42 @@ All outputs are written to the `/output/` directory:
 
 | File | Description |
 |---|---|
+| `final_dataset.csv` | ✅ **Primary output** — fully enriched contributor records with all required fields |
 | `dataset.csv` | Raw merged dataset before classification |
-| `final_dataset.csv` | **Primary output** — enriched and classified contributor records |
-| `classified_contributors.csv` | Contributor records with confidence classifications |
-| `codex_contributors.csv` | Filtered contributor subset |
+| `classified_contributors.csv` | Contributor records with employer and confidence classifications |
+| `codex_contributors.csv` | Contributor subset filtered for the Codex CLI repo |
 | `contribution_summary.csv` | Aggregated contribution statistics per contributor |
-| `linkedin_results.csv` | Raw LinkedIn scrape results |
-| `profiles.csv` | Intermediate profile data |
-
-**Primary output:** `output/final_dataset.csv`
+| `linkedin_results.csv` | Raw scrape results from Bright Data |
+| `profiles.csv` | Intermediate LinkedIn profile data |
 
 ---
 
-## Limitations
+## Key Insights / Results
 
-- **LinkedIn coverage gaps** — Not all GitHub contributors have discoverable or public LinkedIn profiles
-- **Scraping constraints** — Subject to Bright Data API rate limits and LinkedIn's dynamic content structure
-- **Tenure inference accuracy** — Relies on user-entered dates on LinkedIn; gaps, overlaps, or missing dates reduce reliability
-- **Name matching ambiguity** — GitHub usernames do not always map cleanly to real names; false matches are possible
-- **Data freshness** — Scraped data reflects a point-in-time snapshot and may not reflect current roles
+- Analyzed contributors across both repositories and classified each as internal (employee) or external (community contributor) using commit-based signals and org membership
+- Enriched top contributors with LinkedIn-sourced professional data including current employer and tenure
+- Employer bucketing focuses on: **OpenAI, Google, Anthropic, xAI** — with all others labeled by actual employer name
+- Produced a structured, analysis-ready CSV joining GitHub activity with professional background data
 
----
-
-## Future Improvements
-
-- **Visualization dashboard** — Build an interactive chart (e.g., Plotly or Streamlit) to display employer distribution and tenure histograms
-- **Improved name resolution** — Use NLP or fuzzy matching to reduce false positives in GitHub-to-LinkedIn mapping
-- **ML-based confidence scoring** — Train a classifier to score match quality using profile similarity signals
-- **Scaling to larger repos** — Add pagination handling and async scraping for repositories with thousands of contributors
-- **Cross-platform enrichment** — Extend beyond LinkedIn to include Twitter/X, personal websites, or Google Scholar for academic contributors
+> Match rates and coverage vary based on GitHub profile completeness and LinkedIn data availability.
 
 ---
 
 ## How to Run
 
 ```bash
-# 1. Install dependencies
+# 1. Clone the repository
+git clone <your-repo-url>
+cd github-contributor-analysis
+
+# 2. Install dependencies
 pip install -r requirements.txt
 
-# 2. Configure environment variables
+# 3. Configure environment variables
 cp .env.example .env
-# Edit .env and add your GitHub token and Bright Data credentials
+# Edit .env and fill in your API keys
 
-# 3. Run the full pipeline
+# 4. Run the full pipeline
 python analysis-code/github_analysis.py
 python analysis-code/linkedin_search.py
 python analysis-code/linkedin_enrichment.py
@@ -133,4 +171,51 @@ python analysis-code/classify.py
 python analysis-code/contribution_analysis.py
 ```
 
-Output will be saved to `output/final_dataset.csv`.
+Final enriched dataset: `output/final_dataset.csv`  
+Analysis report: `report.md`
+
+---
+
+## Limitations
+
+- **LinkedIn coverage gaps** — Not all GitHub contributors have public or discoverable LinkedIn profiles
+- **Scraping constraints** — Subject to Bright Data API rate limits and LinkedIn's anti-scraping measures
+- **Tenure inference accuracy** — Relies on user-entered dates on LinkedIn; missing or overlapping date ranges reduce reliability
+- **Name matching ambiguity** — GitHub usernames don't always map cleanly to real names; false positive matches are possible
+- **Data freshness** — Scraped data is a point-in-time snapshot and may not reflect current employment
+
+---
+
+## Future Improvements
+
+- **Visualization dashboard** — Plotly or Streamlit dashboard showing employer distribution and tenure histograms per repo
+- **Improved name resolution** — NLP or fuzzy matching to reduce false positives in the GitHub-to-LinkedIn mapping step
+- **ML-based confidence scoring** — Train a classifier using profile similarity signals to score match quality
+- **Async scraping at scale** — Add pagination and concurrent scraping to handle repos with thousands of contributors
+- **Cross-platform enrichment** — Extend enrichment to Twitter/X, personal sites, or Google Scholar for academic contributors
+
+---
+
+## Project Structure
+
+```
+github-contributor-analysis/
+├── analysis-code/
+│   ├── github_analysis.py        # GitHub API extraction + internal/external classification
+│   ├── linkedin_search.py        # LinkedIn URL discovery via Apify
+│   ├── linkedin_enrichment.py    # Profile scraping via Bright Data
+│   ├── classify.py               # Employer bucketing + tenure inference
+│   └── contribution_analysis.py  # Final merge + report generation
+├── output/
+│   ├── final_dataset.csv         # ✅ Primary output
+│   ├── dataset.csv
+│   ├── classified_contributors.csv
+│   ├── codex_contributors.csv
+│   ├── contribution_summary.csv
+│   ├── linkedin_results.csv
+│   └── profiles.csv
+├── report.md                     # Contributor breakdown + findings
+├── .env.example
+├── requirements.txt
+└── README.md
+```
