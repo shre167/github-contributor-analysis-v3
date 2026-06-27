@@ -7,7 +7,7 @@ import sys
 # =========================================================
 # CONFIG
 # =========================================================
-API_KEY = "3c83b896-b3f3-4272-be77-26c6d3513643"
+API_KEY = "API_KEY"
 DATASET_ID = "gd_l1viktl72bvl7bjuj0"
 
 # Target explicit JSON endpoint configuration
